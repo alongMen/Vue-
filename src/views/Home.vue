@@ -27,17 +27,23 @@
               router
               style="height: 100%"
               default-active="/users">
-              <el-submenu index="1">
+              <el-submenu
+                v-for="item in menus"
+                :key="item.id"
+                index="item.id">
                 <template slot="title">
                   <i class="el-icon-location"></i>
-                  <span>用户管理</span>
+                  <span>{{ item.authName }}</span>
                 </template>
-                <el-menu-item index="/users">
+                <el-menu-item
+                  v-for="item1 in item.children"
+                  :key="item1.id"
+                  :index="'/'+item1.path">
                   <i class="el-icon-menu"></i>
-                  用户列表
+                  {{ item1.authName }}
                 </el-menu-item>
               </el-submenu>
-              <el-submenu index="2">
+              <!-- <el-submenu index="2">
                 <template slot="title">
                   <i class="el-icon-location"></i>
                   <span>权限管理</span>
@@ -88,7 +94,7 @@
                   <i class="el-icon-menu"></i>
                   数据报表
                 </el-menu-item>
-              </el-submenu>
+              </el-submenu> -->
             </el-menu>
           </el-aside>
           <el-main
@@ -101,12 +107,22 @@
 
 <script>
 export default {
-  beforeCreate() {
-    var token = sessionStorage.getItem('token');
-    if (!token) {
-      this.$message.warning('请先登录！');
-      this.$router.push('/login');
-    }
+  data() {
+    return {
+      menus: []
+    };
+  },
+  // --设置了路由导航守卫
+  // beforeCreate() {
+  //   var token = sessionStorage.getItem('token');
+  //   if (!token) {
+  //     this.$message.warning('请先登录！');
+  //     this.$router.push('/login');
+  //   }
+  // },
+  // 加载菜单数据
+  created() {
+    this.loadMenus();
   },
   methods: {
     handleLogout() {
@@ -115,6 +131,17 @@ export default {
       sessionStorage.clear();
       // 跳转到登录页面
       this.$router.push('/login');
+    },
+    async loadMenus() {
+      const response = await this.$http.get('menus');
+      this.menus = response.data.data;
+      // console.log(this.menus);
+      const { meta: { status, msg } } = response.data;
+      if (status === 200) {
+        this.$message.success(msg);
+      } else {
+        this.$message.error(msg);
+      }
     }
   }
 };

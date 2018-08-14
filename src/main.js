@@ -8,9 +8,12 @@ import 'element-ui/lib/theme-chalk/index.css';
 import '@/css/index.css';
 import moment from 'moment';
 import myaxios from '@/plugins/Myaxios';
+// 导入面包屑组件
+import MyBreadcrumb from '@/components/MyBreadcrumb';
 
 Vue.use(ElementUI);
 Vue.use(myaxios);
+Vue.component(MyBreadcrumb.name, MyBreadcrumb);
 Vue.filter('fmtDate', (value, fmtString) => {
   return moment(value).format(fmtString);
 });
